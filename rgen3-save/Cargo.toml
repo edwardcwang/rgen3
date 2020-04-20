@@ -11,6 +11,7 @@ edition = "2018"
 [dependencies]
 log = "0.3"
 byteorder = "0.5"
+rand = "0.3"
 
 [dependencies.rgen3-string]
 version = "0.1.0"
