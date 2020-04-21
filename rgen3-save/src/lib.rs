@@ -87,10 +87,19 @@ impl Save {
         } else {
             panic!("Unexpected section data. Expected TrainerInfo");
         };
+
+        let money: u32 = match trainer_info.game {
+            // Decrypt money with security key if need be
+            Game::FireredOrLeafgreen { security_key, .. } => team_and_items.money_raw ^ security_key,
+            Game::Emerald { security_key, .. } => team_and_items.money_raw ^ security_key,
+            _ => team_and_items.money_raw,
+        };
+
         SaveSections {
             team: &team_and_items.team,
             trainer: trainer_info,
             pc_boxes: &block.pokemon_storage.boxes,
+            money: money
         }
     }
 }
@@ -105,6 +114,7 @@ pub struct SaveSections<'a> {
     pub trainer: &'a TrainerInfo,
     pub team: &'a Vec<Pokemon>,
     pub pc_boxes: &'a [PokeBox],
+    pub money: u32,
 }
 
 #[derive(Debug)]
@@ -268,10 +278,11 @@ impl fmt::Debug for TrainerInfo {
 const EM_RU_SA_TEAMANDITEMS_UNK_LEN: usize = 0x0234;
 const FR_LG_TEAMANDITEMS_UNK_LEN: usize = 0x0034;
 const TEAMANDITEMS_POKE_LEN: usize = 600;
+const MONEY_LEN: usize = 4;
 const EM_RU_SA_TEAMANDITEMS_REM_LEN: usize =
-    DATA_SIZE as usize - (EM_RU_SA_TEAMANDITEMS_UNK_LEN + TEAMANDITEMS_POKE_LEN + 4);
+    DATA_SIZE as usize - (EM_RU_SA_TEAMANDITEMS_UNK_LEN + TEAMANDITEMS_POKE_LEN + MONEY_LEN + 4);
 const FR_LG_TEAMANDITEMS_REM_LEN: usize =
-    DATA_SIZE as usize - (FR_LG_TEAMANDITEMS_UNK_LEN + TEAMANDITEMS_POKE_LEN + 4);
+    DATA_SIZE as usize - (FR_LG_TEAMANDITEMS_UNK_LEN + TEAMANDITEMS_POKE_LEN + MONEY_LEN + 4);
 
 #[allow(clippy::large_enum_variant)]
 enum TeamAndItemsUnknown {
@@ -289,6 +300,7 @@ struct TeamAndItems {
     unknown: TeamAndItemsUnknown,
     team: Vec<Pokemon>,
     orig_pokemon_data: [u8; TEAMANDITEMS_POKE_LEN],
+    money_raw: u32, // xor'ed with security key
     remaining_data: TeamAndItemsRemaining,
 }
 

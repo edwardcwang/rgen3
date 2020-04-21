@@ -500,11 +500,13 @@ impl TeamAndItems {
         for _ in 0..team_size {
             team.push(Pokemon::read(&mut poke_reader)?);
         }
+        let money_raw = reader.read_u32::<LE>()?;
         let remaining = TeamAndItemsRemaining::read(reader, game_type)?;
         Ok(TeamAndItems {
             unknown,
             team,
             orig_pokemon_data: poke_data,
+            money_raw: money_raw,
             remaining_data: remaining,
         })
     }
