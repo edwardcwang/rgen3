@@ -100,6 +100,7 @@ impl<'a> PokeGen<'a> {
 fn main() {
     let mut args = std::env::args().skip(1);
     let path = args.next().expect("Need path to save as first arg");
+    let path_save = args.next().expect("Need path to save as first arg OUTPUT");
     let mut save = rgen3_save::Save::load_from_file(&path).unwrap();
     {
         let SaveSectionsMut {
@@ -112,5 +113,5 @@ fn main() {
             }
         }
     }
-    save.save_to_file(path).unwrap();
+    save.save_to_file(path_save).unwrap();
 }
