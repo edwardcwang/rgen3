@@ -89,19 +89,29 @@ impl Save {
             panic!("Unexpected section data. Expected TrainerInfo");
         };
 
-        // Entries that don't directly map to memory
-        let money: u32 = match trainer_info.game {
-            // Decrypt money with security key if need be
-            Game::FireredOrLeafgreen { security_key, .. } => team_and_items.money_raw ^ security_key,
-            Game::Emerald { security_key, .. } => team_and_items.money_raw ^ security_key,
-            _ => team_and_items.money_raw,
-        };
-
         SaveSections {
             team: &team_and_items.team,
             trainer: trainer_info,
             pc_boxes: &block.pokemon_storage.boxes,
-            money: money
+            money_raw: &team_and_items.money_raw
+        }
+    }
+}
+
+pub struct SaveSections<'a> {
+    pub trainer: &'a TrainerInfo,
+    pub team: &'a Vec<Pokemon>,
+    pub pc_boxes: &'a [PokeBox],
+    pub money_raw: &'a u32,
+}
+
+impl<'a> SaveSections<'a> {
+    pub fn getMoney(self) -> u32 {
+        self.money_raw ^ match self.trainer.game {
+            // Decrypt money with security key if need be
+            Game::FireredOrLeafgreen { security_key, .. } => security_key,
+            Game::Emerald { security_key, .. } => security_key,
+            _ => 0
         }
     }
 }
@@ -123,13 +133,6 @@ impl<'a> SaveSectionsMut<'a> {
             _ => 0
         };
     }
-}
-
-pub struct SaveSections<'a> {
-    pub trainer: &'a TrainerInfo,
-    pub team: &'a Vec<Pokemon>,
-    pub pc_boxes: &'a [PokeBox],
-    pub money: u32,
 }
 
 #[derive(Debug)]

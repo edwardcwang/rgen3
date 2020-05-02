@@ -23,8 +23,9 @@ fn main() {
     let mut args = std::env::args().skip(1);
     let path = args.next().expect("Need path to save as first arg");
     let save = rgen3_save::Save::load_from_file(&path).unwrap();
-    let SaveSections { money, team, pc_boxes, .. } = save.sections();
-    println!("money = {}", money);
+    let m = save.sections();
+    let SaveSections { team, pc_boxes, .. } = m;
+    println!("money = {}", m.getMoney());
     let pokemap = include!("../../poke.incl");
     println!("== Team ==");
     for pokemon in team {

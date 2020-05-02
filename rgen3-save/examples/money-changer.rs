@@ -13,7 +13,7 @@ fn main() {
     let money = args.next().expect("Argument 3: new amount of money");
     let mut save = rgen3_save::Save::load_from_file(&path_in).unwrap();
 
-    println!("Current money: {}", save.sections().money);
+    println!("Current money: {}", save.sections().getMoney());
 
     let new_money: u32 = money.parse().unwrap();
     let mut m = save.sections_mut();
