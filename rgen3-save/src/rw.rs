@@ -521,6 +521,7 @@ impl SectionWrite for TeamAndItems {
     }
     fn write_data<W: Write>(&self, writer: &mut W) -> io::Result<()> {
         self.unknown.write(writer)?;
+        // Team size
         writer.write_u32::<LE>(self.team.len() as u32)?;
         for pokemon in &self.team {
             pokemon.write(writer)?;
@@ -534,6 +535,10 @@ impl SectionWrite for TeamAndItems {
         // Fill out rest of pokemon slots with zero bytes
         let offset = self.team.len() * 100;
         writer.write_all(&self.orig_pokemon_data[offset..])?;
+
+        // Write money
+        writer.write_u32::<LE>(self.money_raw as u32)?;
+
         self.remaining_data.write(writer)
     }
 }
