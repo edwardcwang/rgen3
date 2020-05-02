@@ -1,3 +1,5 @@
+extern crate rgen3_save;
+
 use rgen3_save::{Pokemon, SaveSections};
 use rgen3_string::decode_string;
 use std::collections::HashMap;
@@ -21,7 +23,8 @@ fn main() {
     let mut args = std::env::args().skip(1);
     let path = args.next().expect("Need path to save as first arg");
     let save = rgen3_save::Save::load_from_file(&path).unwrap();
-    let SaveSections { team, pc_boxes, .. } = save.sections();
+    let SaveSections { money, team, pc_boxes, .. } = save.sections();
+    println!("money = {}", money);
     let pokemap = include!("../../poke.incl");
     println!("== Team ==");
     for pokemon in team {
