@@ -68,6 +68,7 @@ impl Save {
             team: &mut team_and_items.team,
             trainer: trainer_info,
             pc_boxes: &mut block.pokemon_storage.boxes,
+            money_raw: &mut team_and_items.money_raw
         }
     }
     pub fn sections(&self) -> SaveSections {
@@ -88,6 +89,7 @@ impl Save {
             panic!("Unexpected section data. Expected TrainerInfo");
         };
 
+        // Entries that don't directly map to memory
         let money: u32 = match trainer_info.game {
             // Decrypt money with security key if need be
             Game::FireredOrLeafgreen { security_key, .. } => team_and_items.money_raw ^ security_key,
@@ -108,6 +110,19 @@ pub struct SaveSectionsMut<'a> {
     pub trainer: &'a mut TrainerInfo,
     pub team: &'a mut Vec<Pokemon>,
     pub pc_boxes: &'a mut [PokeBox],
+    pub money_raw: &'a mut u32
+}
+
+impl<'a> SaveSectionsMut<'a> {
+    pub fn setMoney(&mut self, money: u32) {
+        // Apply XOR with security key
+        *(self.money_raw) = money ^ match self.trainer.game {
+            // Decrypt money with security key if need be
+            Game::FireredOrLeafgreen { security_key, .. } => security_key,
+            Game::Emerald { security_key, .. } => security_key,
+            _ => 0
+        };
+    }
 }
 
 pub struct SaveSections<'a> {
