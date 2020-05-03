@@ -106,7 +106,7 @@ pub struct SaveSections<'a> {
 }
 
 impl<'a> SaveSections<'a> {
-    pub fn getMoney(self) -> u32 {
+    pub fn get_money(self) -> u32 {
         self.money_raw ^ match self.trainer.game {
             // Decrypt money with security key if need be
             Game::FireredOrLeafgreen { security_key, .. } => security_key,
@@ -124,7 +124,7 @@ pub struct SaveSectionsMut<'a> {
 }
 
 impl<'a> SaveSectionsMut<'a> {
-    pub fn setMoney(&mut self, money: u32) {
+    pub fn set_money(&mut self, money: u32) {
         // Apply XOR with security key
         *(self.money_raw) = money ^ match self.trainer.game {
             // Decrypt money with security key if need be

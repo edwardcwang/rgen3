@@ -25,7 +25,7 @@ fn main() {
     let save = rgen3_save::Save::load_from_file(&path).unwrap();
     let m = save.sections();
     let SaveSections { team, pc_boxes, .. } = m;
-    println!("money = {}", m.getMoney());
+    println!("money = {}", m.get_money());
     let pokemap = include!("../../poke.incl");
     println!("== Team ==");
     for pokemon in team {
